@@ -3,7 +3,14 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
-export default function TokenCard({ token, onClick }: { token: any; onClick: () => void }) {
+type Props = {
+    token: any;
+    onClick: () => void;
+    onRemove?: (address: string) => void;
+    showRemove?: boolean;
+  };
+
+export default function TokenCard({ token, onClick, onRemove, showRemove }: Props) {
     const [isInWatchlist, setIsInWatchlist] = useState(false);
 
     useEffect(() => {
@@ -22,6 +29,11 @@ export default function TokenCard({ token, onClick }: { token: any; onClick: () 
     
         localStorage.setItem("watchlist", JSON.stringify(updated));
         setIsInWatchlist(!isInWatchlist);
+
+        // If we are in the watchlist view - trigger parent to remove the component
+        if (isInWatchlist && onRemove) {
+            onRemove(token.address);
+        }
       };
     
       return (
