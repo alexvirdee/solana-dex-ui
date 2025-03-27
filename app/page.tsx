@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import axios from 'axios';
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import TokenCard from "./components/TokenCard";
 
 type Token = {
   v24hUSD(v24hUSD: any): unknown;
@@ -12,7 +12,6 @@ type Token = {
   name: string;
   symbol: string;
   price: number;
-  volume: number;
   liquidity: number;
   logoURI: string;
 };
@@ -21,8 +20,9 @@ export default function Home() {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const router = useRouter()
+  const router = useRouter();
 
+  // Initial app effect to get list of tokens
   useEffect(() => {
     const tokenList = 'https://public-api.birdeye.so/defi/tokenlist?sort_by=v24hUSD&sort_type=desc&offset=0&limit=50&min_liquidity=100';
 
@@ -47,8 +47,38 @@ export default function Home() {
     fetchTokens();
   }, [])
 
+  // Watchlist logic for homepage
+  // {tokens.map((token) => {
+  //   const [isInWatchList, setIsInWatchList] = useState(false);
+
+  //   // Track tokens in watchlist
+  //   useEffect(() => {
+  //     const existing = JSON.parse(localStorage.getItem("watchlist") || "[]");
+  //     const found = existing.some((t: any) => t.address === token.address);
+  //     setIsInWatchList(found);
+  //   }, [token.address]);
+
+
+  //   const toggleWatchList = (e: React.MouseEvent) => {
+  //     e.stopPropagation();
+  //     const existing = JSON.parse(localStorage.getItem("watchlist") || "[]");
+
+  //     let updated;
+  //     if (isInWatchList) {
+  //       updated = existing.filter((t: any) => t.address !== token.address);
+  //     } else {
+  //       updated = [...existing, token];
+  //     }
+
+  //     localStorage.setItem("watchlist", JSON.stringify(updated));
+  //     setIsInWatchList(!isInWatchList);
+  //   }
+
+  // })}
+
   const handleCardClick = (token: Token) => {
     const query = new URLSearchParams({
+      address: token.address,
       name: token.name,
       symbol: token.symbol,
       price: token.price.toString(),
@@ -66,16 +96,11 @@ export default function Home() {
     <div>
       <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {tokens.map((token) => (
-            <div onClick={() => handleCardClick(token)} key={token.address} className="border rounded-xl p-4 shadow hover:shadow-md transition cursor-pointer hover:bg-blue-100">
-              <div className="flex items-center gap-2 mb-2">
-                <img src={token.logoURI} alt={token.symbol} className="w-6 h-6" />
-                <h2 className="text-lg font-semibold">{token.symbol}</h2>
-              </div>
-              <p>Name: {token.name}</p>
-              <p>Price: ${token.price.toFixed(4)}</p>
-              <p>Volume (24h): ${Number(token.v24hUSD).toLocaleString()}</p>
-              <p>Liquidity: ${Number(token.liquidity).toLocaleString()}</p>
-            </div>
+          <TokenCard 
+            key={token.address}
+            token={token}
+            onClick={() => handleCardClick(token)}
+          />
         ))}
       </div>
     </div>
