@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { toast } from "sonner"
 
 type Props = {
     token: any;
@@ -26,13 +27,19 @@ export default function TokenCard({ token, onClick, onRemove, showRemove }: Prop
         const updated = isInWatchlist
           ? existing.filter((t: any) => t.address !== token.address)
           : [...existing, token];
+
+          console.log('updated', updated);
     
         localStorage.setItem("watchlist", JSON.stringify(updated));
         setIsInWatchlist(!isInWatchlist);
 
         // If we are in the watchlist view - trigger parent to remove the component
         if (isInWatchlist && onRemove) {
+            toast(`Removed ${token.name} from Watchlist`)
             onRemove(token.address);
+        } else {
+            // Token has been added to the watchlist show a toast to the user
+            toast(`Added ${token.name} to Watchlist`)
         }
       };
     
