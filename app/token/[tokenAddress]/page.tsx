@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useRouter } from 'next/navigation';
+import TradingViewChart from "@/app/components/TradingViewChart";
 
 export default function TokenDetailsPage() {
   const searchParams = useSearchParams();
@@ -38,6 +39,9 @@ export default function TokenDetailsPage() {
         <p><strong>Volume (24h):</strong> ${Number(v24hUSD).toLocaleString()}</p>
         <p><strong>Liquidity:</strong> ${Number(liquidity).toLocaleString()}</p>
       </div>
+
+
+      <TradingViewChart symbol={`${symbol}`} />
     </div>
 
   )

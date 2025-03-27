@@ -1,72 +1,17 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import axios from 'axios';
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import TokenCard from "./components/TokenCard";
+import { useCachedTokens } from './hooks/useCachedTokens';
 
-type Token = {
-  v24hUSD(v24hUSD: any): unknown;
-  address: string;
-  name: string;
-  symbol: string;
-  price: number;
-  liquidity: number;
-  logoURI: string;
-};
 
 export default function Home() {
-  const [tokens, setTokens] = useState<Token[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { tokens, loading, error } = useCachedTokens();
 
   const router = useRouter();
 
-  // Initial app effect to get list of tokens
-  useEffect(() => {
-    const tokenList = 'https://public-api.birdeye.so/defi/tokenlist?sort_by=v24hUSD&sort_type=desc&offset=0&limit=50&min_liquidity=100';
-
-    const fetchTokens = async () => {
-      try {
-        const cache = localStorage.getItem('tokenCache');
-        const cacheTime = localStorage.getItem('tokenCacheTimestamp');
-        const now = Date.now();
-
-        // If the cache exists and is < 10 minutes old, use it
-        if (cache && cacheTime && now - parseInt(cacheTime) < 10 * 60 * 1000) {
-          const parsed = JSON.parse(cache);
-          setTokens(parsed);
-          setLoading(false);
-
-          return;
-        }
-
-        const res = await axios.get(tokenList, {
-          headers: {
-            'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY!
-          },
-        });
-
-        console.log('res', res);
-
-        setTokens(res.data.data.tokens);
-
-        // Save to localStorage for caching to avoid 429 rate limiting api error from bird eye
-        localStorage.setItem("tokenCache", JSON.stringify(res.data.data.tokens));
-        localStorage.setItem("tokenCacheTimestamp", now.toString());
-
-      } catch (error) {
-        console.error('Error fetching tokens', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchTokens();
-  }, [])
-
-
-  const handleCardClick = (token: Token) => {
+  const handleCardClick = (token: any) => {
     const query = new URLSearchParams({
       address: token.address,
       name: token.name,
@@ -80,7 +25,8 @@ export default function Home() {
     router.push(`/token/${token.address}?${query}`);
   }
 
-  if (loading) return <p>Loading tokens...</p>
+  if (loading) return <p className="p-6">Loading tokens...</p>
+  if (error) return <p className="p-6">There was an error loading tokens.</p>
 
   return (
     <div>
