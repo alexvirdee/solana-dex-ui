@@ -27,13 +27,13 @@ export default function Home() {
 
         const res = await axios.get(tokenList, {
           headers: {
-            'X-API-KEY': '8fe7b8e228f54b169c05e68917916774'
+            'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY!
           },
         });
 
         console.log('res', res)
 
-        setTokens(res.data.data.tokens.slice(0, 10)); // Get top 10 tokens
+        setTokens(res.data.data.tokens); 
       } catch (error) {
         console.error('Error fetching tokens', error);
       } finally {
