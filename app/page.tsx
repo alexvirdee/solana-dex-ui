@@ -46,8 +46,6 @@ export default function Home() {
 
   return (
     <div>
-      solana dex ui
-
       <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {tokens.map((token) => (
         <div key={token.address} className="border rounded-xl p-4 shadow hover:shadow-md transition">
