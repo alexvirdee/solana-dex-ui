@@ -65,34 +65,6 @@ export default function Home() {
     fetchTokens();
   }, [])
 
-  // Watchlist logic for homepage
-  // {tokens.map((token) => {
-  //   const [isInWatchList, setIsInWatchList] = useState(false);
-
-  //   // Track tokens in watchlist
-  //   useEffect(() => {
-  //     const existing = JSON.parse(localStorage.getItem("watchlist") || "[]");
-  //     const found = existing.some((t: any) => t.address === token.address);
-  //     setIsInWatchList(found);
-  //   }, [token.address]);
-
-
-  //   const toggleWatchList = (e: React.MouseEvent) => {
-  //     e.stopPropagation();
-  //     const existing = JSON.parse(localStorage.getItem("watchlist") || "[]");
-
-  //     let updated;
-  //     if (isInWatchList) {
-  //       updated = existing.filter((t: any) => t.address !== token.address);
-  //     } else {
-  //       updated = [...existing, token];
-  //     }
-
-  //     localStorage.setItem("watchlist", JSON.stringify(updated));
-  //     setIsInWatchList(!isInWatchList);
-  //   }
-
-  // })}
 
   const handleCardClick = (token: Token) => {
     const query = new URLSearchParams({
