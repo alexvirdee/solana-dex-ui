@@ -28,6 +28,19 @@ export default function Home() {
 
     const fetchTokens = async () => {
       try {
+        const cache = localStorage.getItem('tokenCache');
+        const cacheTime = localStorage.getItem('tokenCacheTimestamp');
+        const now = Date.now();
+
+        // If the cache exists and is < 10 minutes old, use it
+        if (cache && cacheTime && now - parseInt(cacheTime) < 10 * 60 * 1000) {
+          const parsed = JSON.parse(cache);
+          setTokens(parsed);
+          setLoading(false);
+
+          return;
+        }
+
         const res = await axios.get(tokenList, {
           headers: {
             'X-API-KEY': process.env.NEXT_PUBLIC_BIRDEYE_API_KEY!
@@ -37,6 +50,11 @@ export default function Home() {
         console.log('res', res);
 
         setTokens(res.data.data.tokens);
+
+        // Save to localStorage for caching to avoid 429 rate limiting api error from bird eye
+        localStorage.setItem("tokenCache", JSON.stringify(res.data.data.tokens));
+        localStorage.setItem("tokenCacheTimestamp", now.toString());
+
       } catch (error) {
         console.error('Error fetching tokens', error);
       } finally {
